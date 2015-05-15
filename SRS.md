@@ -101,14 +101,34 @@ host these virtual machine is the Amazon Web Service (AWS). For portability betw
 CBO Web Portal will be containerized using Dockers. The Dockers will run on top of the Virtual Machines.
 
 The following is the costing of the AWS Services needed to run the CBO Web Portal:
-1 x Amazon ELB Service (For Load Balancers): $
 
-The CBO Web Portal system 
-participant UA
-participant CBOAPI
-participant CBOCACHE
-UA -> CBOAPI: Send me Student Record with ID xxxxxx
-CBPOAPI -> CBOCACHE: Send me Student Record with ID xxxxxx
-CBOCACHE -> CBOAPI: Here is the SRI in XML for ID xxxxxx
-CBOAPI -> UA: Here is the SRI in JSON for ID xxxxxx
-
+For Production:   
+1 x Amazon EC2 Large Instance (m3.large, 7.5 GB Memory): $76.66/month, 1 year commitment   
+1 x Amazon ElastiCache Small Instance (t2.small, 2GB in memory storage): $24.89/month   
+1 x AWS Data Transfer Out (500 GB): $44.91/month   
+1 x AWS EBS Volume (50GB): $6.00/month   
+1 x Mongolab AWS M1 (Dedicated Cluster): $180.00/month   
+   
+For Staging:   
+1 x Amazon EC2 Medium Instance (m3.medium, 3.7 GB Memory): $36.50/month, 1 year commitment   
+1 x AWS EBS Volume (10GB): $2.00/month   
+1 x Mongolab Sandbox: $0.00/month   
+0 x ElastiCache Small Instance (shared with production): $0.00/month   
+0 x AWS Data Tansfer Out (shared with production): $0.00/month   
+   
+Miscellaneous   
+1 x GeotrustSSL Wildcard SSL Certificate: $439.00/year   
+1 x Comodo Wildcard SSL Certificate for Staging: $98.00/year   
+1 x Domain Name: $15.00/year   
+   
+Total monthly cost: $360.96   
+Tota yearly cost: $552.00   
+   
+The CBO Web Portal system    
+participant UA   
+participant CBOAPI   
+participant CBOCACHE   
+UA -> CBOAPI: Send me Student Record with ID xxxxxx   
+CBPOAPI -> CBOCACHE: Send me Student Record with ID xxxxxx   
+CBOCACHE -> CBOAPI: Here is the SRI in XML for ID xxxxxx   
+CBOAPI -> UA: Here is the SRI in JSON for ID xxxxxx   
