@@ -1,7 +1,8 @@
 Account
 	_id: { type: ID },
 	name: { type: String, required: true, unique: true }
-	url: { type: String, required: true }, //The unique URL where the site lives
+	url: { type: String, required: true } // The unique URL where the site lives
+	website: { type: String } // The CBO Main Website, not related with the app
 	description: { type: String }
 	addresses: [ Address ]
 	created: { type: Date, required: true }
@@ -11,35 +12,71 @@ Account
 	
 Address
     address_type: { type: String, enum: ["Home","Work","Mailing"]}
-    venue: String //Optional venue name at the address, useful for names of buildings. (ex: Smith Hall)
+    venue: String // Optional venue name at the address, useful for names of buildings. (ex: Smith Hall)
     address_line: String
-    city: String,
-    state: String,
-    zip: String,
-    country: String, //The country code according to ISO 3166-1 Alpha-2.
+    city: String
+    state: String
+    zip: String
+    country: String, // The country code according to ISO 3166-1 Alpha-2.
     location: { latitude: Number, longitude: Number, accuracy: { type: String, enum: ["Rooftop","Approximate"]} }, //An object hash representing the geocoded location information for the address.
-    
+
+// A User is a person, identified by e-mail, that have access to one or more CBO, as described in the UserPermission.    
 User
 	_id: { type: ID },
-	email: { type: String, trim: true, unique: true, index: true },
-	permissions: [ UserPermission ],
+	first_name: { type: String, trim: true }
+	last_name: { type: String, trim: true, required: true }
+	middle_name: { type: String, trim: true }
+	email: { type: String, trim: true, unique: true, index: true, minlength: 6 }
+	hashedPassword: { type: String, required: true }
+	salt: { type: String }
+	permissions: [ UserPermission ], // Store a permission a user has, by each account.
 	created: { type: Date, required: true }
 	creator: { type: Schema.Types.ObjectId, ref: 'User' }
 	last_updated: { type: Date, required: true, default: Date.Now() }
 	last_updated_by: { type: Schema.Types.ObjectId, ref: 'User' }
 
+// Code is used to save Client Application Credential.
+Code
+	code: { type: String, unique: true, required: true }
+	redirectUri: { type: String, required: true }
+	userId: { type: String, required: true }
+	clientId: { type: String, required: true }
+
+// Token is the user token that is used to access the API
+Token
+	token: { type: String, unique: true, required: true }
+	userId: { type: String, required: true }
+	scope: { type: String }
+	clientId: { type: String, required: true }
+	created: { type: Date, required: true }
+	expired: { type: Date, required: true }
+	
+// Once a while, the token will expire, when the token expire, the user can use refresh token from Auth to get a new token.
+// This is to ensure that the user is secured from Replay attack (when the token is compromised).
+RefreshToken
+	resreshToken: { type: String, unique: true, required: true }
+	userId: { type: String, required: true }
+	created: { type: Date, default: Date.now }
+
+// A User might have access to multiple accounts, each of the accounts where the user have access to will be a new entry in UserPermission
+// The permissions in the UserPermission is an array of permissions a user have to that specific account.
 UserPermission
 	account: { type: Schema.Types.ObjectId, ref: 'Account' }
 	permissions: [ permission ]
-		
+
+// Program keeps the record of a program unique to the CBO.
+// Most CBO will have one program, but there are some that have multiple programs.		
 Program	
 	_id: { type: ID },
 	name: { type: String, required: true, unique: true }
 	created: { type: Date, required: true }
 	creator: User
 	last_updated: { type: Date, required: true, default: Date.Now() }
-	last_updated_by: User
+	last_updated_by: { type: Schema.Types.ObjectId, ref: 'User' }
 		
+// Student keeps the record of a student unique to the CBO.
+// If there is a unique student participate in more than one CBO, then they will
+// have one entry for each CBO the student participated.
 Student
 	_id: { type: ID }
 	account: { type: Schema.Types.ObjectId, ref: 'Account' }
@@ -57,4 +94,11 @@ Student
 	
 StudentProgram
 	program: { type: Schema.Types.ObjectId, ref: 'Program' }
-	
+	active: { type: Bool, required: true, default: true } // Whether the student is currently active in the program or not.
+	participation_start_date: { type: Date }
+	participation_end_date: { type: Date }
+	cohort: { type: String }
+	created: { type: Date, required: true }
+	creator: { type: Schema.Types.ObjectId, ref: 'User' }
+	last_updated: { type: Date, required: true, default: Date.Now() }
+	last_updated_by: { type: Schema.Types.ObjectId, ref: 'User' }
