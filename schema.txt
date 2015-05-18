@@ -1,4 +1,4 @@
-Account
+Organization
 	_id: { type: ID },
 	name: { type: String, required: true, unique: true }
 	url: { type: String, required: true } // The unique URL where the site lives
@@ -10,8 +10,8 @@ Account
 	last_updated: { type: Date, required: true, default: Date.Now() }
 	last_updated_by: { type: Schema.Types.ObjectId, ref: 'User' }
 	
-// Address list the addresses an account have.
-// Address is a subdocument (part of) of Account document.
+// Address lists the addresses an organization has.
+// Address is a subdocument (part of) of Organization document.
 Address
     address_type: { type: String, enum: ["Home","Work","Mailing"]}
     venue: String // Optional venue name at the address, useful for names of buildings. (ex: Smith Hall)
@@ -31,7 +31,7 @@ User
 	email: { type: String, trim: true, unique: true, index: true, minlength: 6 }
 	hashedPassword: { type: String, required: true }
 	salt: { type: String }
-	permissions: [ UserPermission ], // Store a permission a user has, by each account.
+	permissions: [ UserPermission ], // Store a permission a user has, by each organization.
 	created: { type: Date, required: true }
 	creator: { type: Schema.Types.ObjectId, ref: 'User' }
 	last_updated: { type: Date, required: true, default: Date.Now() }
@@ -63,11 +63,11 @@ RefreshToken
 	userId: { type: String, required: true }
 	created: { type: Date, default: Date.now }
 
-// A User might have access to multiple accounts, each of the accounts where the user have access to will be a new entry in UserPermission
-// The permissions in the UserPermission is an array of permissions a user have to that specific account.
+// A User might have access to multiple organizations, each of the organizations where the user have access to will be a new entry in UserPermission
+// The permissions in the UserPermission is an array of permissions a user have to that specific organization.
 // UserPermission is a subdocument (part of) the User document.
 UserPermission
-	account: { type: Schema.Types.ObjectId, ref: 'Account' }
+	organization: { type: Schema.Types.ObjectId, ref: 'Organization' }
 	permissions: [ permission ]
 
 // Program keeps the record of a program unique to the CBO.
@@ -85,7 +85,7 @@ Program
 // have one entry for each CBO the student participated.
 Student
 	_id: { type: ID }
-	account: { type: Schema.Types.ObjectId, ref: 'Account' }
+	organization: { type: Schema.Types.ObjectId, ref: 'Organization' }
 	first_name: { type: String }
 	last_name: { type: String, required: true, index: true }
 	middle_name: { type: String }
