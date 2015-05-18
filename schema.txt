@@ -10,6 +10,8 @@ Account
 	last_updated: { type: Date, required: true, default: Date.Now() }
 	last_updated_by: { type: Schema.Types.ObjectId, ref: 'User' }
 	
+// Address list the addresses an account have.
+// Address is a subdocument (part of) of Account document.
 Address
     address_type: { type: String, enum: ["Home","Work","Mailing"]}
     venue: String // Optional venue name at the address, useful for names of buildings. (ex: Smith Hall)
@@ -37,6 +39,7 @@ User
 
 // Code is used to save Client Application Credential.
 Code
+	_id: { type: ID },
 	code: { type: String, unique: true, required: true }
 	redirectUri: { type: String, required: true }
 	userId: { type: String, required: true }
@@ -44,6 +47,7 @@ Code
 
 // Token is the user token that is used to access the API
 Token
+	_id: { type: ID },
 	token: { type: String, unique: true, required: true }
 	userId: { type: String, required: true }
 	scope: { type: String }
@@ -54,12 +58,14 @@ Token
 // Once a while, the token will expire, when the token expire, the user can use refresh token from Auth to get a new token.
 // This is to ensure that the user is secured from Replay attack (when the token is compromised).
 RefreshToken
+	_id: { type: ID },
 	resreshToken: { type: String, unique: true, required: true }
 	userId: { type: String, required: true }
 	created: { type: Date, default: Date.now }
 
 // A User might have access to multiple accounts, each of the accounts where the user have access to will be a new entry in UserPermission
 // The permissions in the UserPermission is an array of permissions a user have to that specific account.
+// UserPermission is a subdocument (part of) the User document.
 UserPermission
 	account: { type: Schema.Types.ObjectId, ref: 'Account' }
 	permissions: [ permission ]
@@ -92,6 +98,8 @@ Student
 	last_updated: { type: Date, required: true, default: Date.Now() }
 	last_updated_by: { type: Schema.Types.ObjectId, ref: 'User' }
 	
+// StudentPrograms list the programs that a student enrolled in, in a CBO, with their individual student program data.
+// StudentProgram is a subdocument (part of) the Student document.
 StudentProgram
 	program: { type: Schema.Types.ObjectId, ref: 'Program' }
 	active: { type: Bool, required: true, default: true } // Whether the student is currently active in the program or not.
